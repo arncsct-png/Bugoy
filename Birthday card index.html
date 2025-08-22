@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blow the Candle 🎂</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile friendly -->
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e6e2dc, #228127);
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 25px;
+      padding: 30px 25px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 100%;
+      animation: popIn 1s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #0e351e;
+    }
+
+    #candle {
+      font-size: 5em;
+      margin: 15px 0;
+      transition: transform 0.3s ease;
+    }
+
+    #candle.blowed {
+      transform: scale(1.3) rotate(-10deg);
+    }
+
+    #message {
+      display: none;
+      font-size: 2em;
+      font-weight: bold;
+      color: #3e6d40;
+      margin-top: 20px;
+      animation: fadeIn 2s forwards;
+    }
+
+    #letter { 
+      display: none; /* hidden at first */
+      margin-top: 15px;
+      font-size: 1em;
+      line-height: 1.5em;
+      color: #444;
+      text-align: justify;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      opacity: 0.9;
+      border-radius: 50%;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.85em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="heading">🎈 Blow your Candle Baby 🎈</h1>
+    <div id="candle">🎂</div>
+    <div id="message">🎉 Happy Birthday Baby! 🎉</div>
+    <div id="letter">
+      <p>Baby, I love you so much. Happy Birthday. I hope I was able to make you happy today baby. 
+        I know baby that things weren't as great as last year between us. I'm sorry baby na nag-aaway tayo. Everything was never your fault baby. I'm sorry maikli pasensya ko. 
+        I know baby that I've caused you so much pressure and worry. I'll never leave you baby 
+        I'm just happy baby that I'm still with you ngayong birthday mo. I'm really happy baby that you were born and that we met each other.
+        You're still one of my greatest blessings hanggang ngayon baby. Thank you baby because you're very patient with me and you're very kind.
+         I hope sa mga susunod mo pang birthday we get to celebrate it together. I love you baby, I'm sorry I hurt you sometimes. Baby, sorry eto lang gift ko,
+         bawi ako next time baby promise. Di ko alam if you'll like it. I love you, I hope baby happy ka ngayong day. Happy happy birthday </p>
+    </div>
+    <footer>- From someone who loves you</footer>
+  </div>
+
+  <script>
+    // Confetti function
+    function launchConfetti() {
+      for (let i = 0; i < 80; i++) {
+        let confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        document.body.appendChild(confetti);
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+          ["#ffeb3b", "#f44336", "#4caf50", "#2196f3", "#e91e63", "#9c27b0"][Math.floor(Math.random() * 6)];
+        confetti.style.animationDuration = (Math.random() * 2 + 3) + "s"; // lasts 3–5s
+        confetti.style.animationName = "fall";
+        setTimeout(() => confetti.remove(), 5000); // remove after 5 seconds
+      }
+    }
+
+    // Mic detection
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const audioContext = new AudioContext();
+      const mic = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      mic.connect(analyser);
+
+      const data = new Uint8Array(analyser.frequencyBinCount);
+
+      function checkBlow() {
+        analyser.getByteFrequencyData(data);
+        let volume = data.reduce((a, b) => a + b) / data.length;
+
+        if (volume > 65) { // adjust sensitivity if needed
+          let candle = document.getElementById("candle");
+          let heading = document.getElementById("heading");
+          if (!candle.classList.contains("blowed")) { // only trigger once
+            candle.textContent = "❤️"; // change candle to air emoji
+            candle.classList.add("blowed"); 
+            heading.style.display = "none"; // hide the heading
+            document.getElementById("message").style.display = "block";
+            document.getElementById("letter").style.display = "block"; // show letter only after blow
+            launchConfetti();
+          }
+        }
+        requestAnimationFrame(checkBlow);
+      }
+      checkBlow();
+    });
+  </script>
+</body>
+</html>
